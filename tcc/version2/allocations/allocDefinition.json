@@ -1,0 +1,99 @@
+{
+    "initialAllocation": [
+        {
+            "module_name": "0_0",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_1",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_2",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_3",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_4",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_5",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_6",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_7",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "0_8",
+            "app": "0",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_9",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_10",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_11",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_12",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_13",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_14",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_15",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_16",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_17",
+            "app": "1",
+            "id_resource": 3
+        },
+        {
+            "module_name": "1_18",
+            "app": "1",
+            "id_resource": 3
+        }
+    ]
+}
