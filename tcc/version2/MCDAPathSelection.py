@@ -28,11 +28,6 @@ class MCDARoutingAndDeploying(Selection):
         self.path = path
         pathTMP = "tmp_MCDA"
 
-        #TODO CAMBAR TIME STAMP
-        #DEBUG
-        # self.datestamp = time.strftime('%Y%m%d%H%M%S')
-        # self.datestamp = time.strftime('%Y%m%d')
-
         self.dname = pathResults + pathTMP
         try:
             os.makedirs(self.dname)
@@ -57,11 +52,13 @@ class MCDARoutingAndDeploying(Selection):
 
 
     def get_the_path(self,G,node_src,node_dst):
+        self.logger.info(" function: get_the_path activated")
         if (node_src,node_dst) not in self.min_path.keys():
             self.min_path[(node_src, node_dst)]= list(nx.shortest_path(G, source=node_src, target=node_dst))
         return self.min_path[(node_src, node_dst)]
 
     def compute_NodeDESCandidates(self, node_src, alloc_DES, sim, DES_dst):
+        self.logger.info(" function: compute_NodeDESCandidates activated")
 
         try:
             # print len(DES_dst)
@@ -71,6 +68,7 @@ class MCDARoutingAndDeploying(Selection):
                 node_dst = alloc_DES[dev]
                 try:
                     nodes.append(self.get_the_path(sim.topology.G, node_src,node_dst))
+                    self.logger.info("Appending on node %s" % (node_src))
 
                 except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
                     self.logger.warning("No path between two nodes: %s - %s " % (node_src, node_dst))
@@ -82,35 +80,8 @@ class MCDARoutingAndDeploying(Selection):
             # print "Simulation ends?"
             return []
 
-
-    # def compute_SAR(self, sim, node_src, node_dst, message):
-    #     try:
-    #         print "COMPUTING LAT. node_src: %i to node_dst: %i" % (node_src, node_dst)
-    #
-    #         path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
-    #         print "PATH ", path
-    #
-    #         totalTimelatency = 0
-    #         for i in range(len(path) - 1):
-    #             link = (path[i], path[i + 1])
-    #             print "LINK : ", link
-    #             # print " BYTES :", message.bytes
-    #             totalTimelatency += sim.topology.G.edges[link][Topology.LINK_PR] + (
-    #                 message.bytes / sim.topology.G.edges[link][Topology.LINK_BW])
-    #             # print sim.topology.G.edges[link][Topology.LINK_BW]
-    #
-    #         att_node = sim.topology.get_nodes_att()[path[-1]]
-    #         time_service = message.inst / float(att_node["IPT"])
-    #         totalTimelatency += time_service  # HW - computation of last node
-    #         print totalTimelatency
-    #
-    #         return totalTimelatency
-    #
-    #     except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
-    #         return 9999999
-
-
     def compute_Latency(self,sim,node_src,node_dst):
+        self.logger.info(" function: compute_Latency activated")
         try:
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
             totalTimelatency = 0
@@ -122,52 +93,12 @@ class MCDARoutingAndDeploying(Selection):
         except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
             return 9999999
 
-
-    # def compute_DSAR(self, node_src, alloc_DES, sim, DES_dst,message):
-    #     try:
-    #         bestSpeed = float('inf')
-    #         minPath = []
-    #         bestDES = []
-    #         #print len(DES_dst)
-    #         for dev in DES_dst:
-    #             #print "DES :",dev
-    #             node_dst = alloc_DES[dev]
-    #             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
-    #             speed = 0
-    #             for i in range(len(path) - 1):
-    #                 link = (path[i], path[i + 1])
-    #                # print "LINK : ",link
-    #                # print " BYTES :", message.bytes
-    #                 speed += sim.topology.G.edges[link][Topology.LINK_PR] + (message.bytes/sim.topology.G.edges[link][Topology.LINK_BW])
-    #                 #print sim.topology.G.edges[link][Topology.LINK_BW]
-    #
-    #             att_node = sim.topology.get_nodes_att()[path[-1]]
-    #             #TODO ISAAC
-    #             # if att_node["id"]==100:
-    #             #     print "\t last cloud"
-    #             #     speed += 10000
-    #
-    #             time_service = message.inst / float(att_node["IPT"])
-    #             speed += time_service  # HW - computation of last node
-    #             #print "SPEED: ",speed
-    #             if  speed < bestSpeed:
-    #                 bestSpeed = speed
-    #                 minPath = path
-    #                 bestDES = dev
-    #
-    #         #print bestDES,minPath
-    #         return minPath, bestDES
-    #
-    #     except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
-    #         self.logger.warning("There is no path between two nodes: %s - %s " % (node_src, node_dst))
-    #         # print "Simulation ends?"
-    #         return [], None
-
     def sort_table(self,table, col=0):
         return sorted(table, key=operator.itemgetter(col))
 
     def runMCDAR(self,pathRScript, pathWD, fileName, ncriteria, criteriaWeights, categoriesLowerProfiles,
                      criteriaMinMax, criteriaVetos, majorityThreshold):
+        self.logger.info(" function: runMCDAR activated")
 
         cmd = ["Rscript", pathRScript + "/rscripts/MCDAv2.R", pathWD, fileName, ncriteria, criteriaWeights,
               categoriesLowerProfiles,criteriaMinMax, criteriaVetos, majorityThreshold]
@@ -177,6 +108,7 @@ class MCDARoutingAndDeploying(Selection):
 
     def runELECTRER(self,pathRScript, pathWD, fileName, criteriaWeights, IndifferenceThresholds,
                      PreferenceThresholds, VetoThresholds, minmaxcriteria):
+        self.logger.info(" function: runELECTRER activated")
 
         cmd = ["Rscript", pathRScript + "rscripts/ELECTREv2.R", pathWD, fileName, criteriaWeights, IndifferenceThresholds,
                PreferenceThresholds, VetoThresholds, minmaxcriteria]
@@ -201,6 +133,7 @@ class MCDARoutingAndDeploying(Selection):
     # TODO The implementation of new criteria should be dynamic
 
     def ELECTRE_evaluation(self,sim,node_src,nodes,message,app_name,service):
+        self.logger.info(" function: ELECTRE_evaluation activated")
         nprojects = len(nodes)
         nrankcategories = 5
         criteriaMinMax = ""
@@ -387,6 +320,7 @@ class MCDARoutingAndDeploying(Selection):
     """
 
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
+        self.logger.info(" function: get_path activated")
         # print message
         # Entity that sends the message
         node_src = topology_src

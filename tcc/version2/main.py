@@ -40,8 +40,7 @@ def createApplicationFromJson(data):
         # Mensagens dessa aplicação
         messages = {}
         for message in app["message"]:
-            print("Criando mensagem: %s" %message["name"])
-
+            logging.info("Criando mensagem: %s" %message["name"])
             messages[message["name"]] = Message(message["name"], message["moduleSource"], message["moduleDestiny"], instructions=message["instructions"], bytes=message["bytes"])
 
             # Mensagens que surgem da source (sem nó em específico)
@@ -49,7 +48,7 @@ def createApplicationFromJson(data):
                 a.add_source_messages(messages[message["name"]])
 
         # Usar .keys() retorna número de itens de um... container
-        print("Total de mensagens criadas: %i" %len(messages.keys()))
+        logging.info("Total de mensagens criadas: %i" %len(messages.keys()))
 
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
@@ -67,7 +66,7 @@ def main(simulated_time, case, idCloud):
     pathResults = 'results/'
 
     t = Topology()
-    dataNetwork = json.load(open('topologies/network_teste.json'))
+    dataNetwork = json.load(open('topologies/networkDefinition.json'))
     t.load(dataNetwork)
     # t.write('topologies/network_teste.gexf')
 
@@ -105,15 +104,19 @@ def main(simulated_time, case, idCloud):
         pop_app = DynamicPopulation(name="Dynamic_%s" % aName, data=data, activation_dist=distribution)
         # s.deploy_app(apps[aName], placement, pop_app, selectorPath)
         s.deploy_app(apps[aName], placement, selectorPath)
+        #s.deploy_app2()
+        logging.info("Deploying app: %i" %int(aName))
 
-    # logging.info(" Performing simulation: %s %i "%(case,it))
+    logging.info(" Performing simulation: %s "%(case))
     s.run(stop_time, test_initial_deploy=False, show_progress_monitor=False)  # TEST to TRUE
+    logging.info(" End of Simulation")
 
 
 
+logging.config.fileConfig(os.getcwd() + '/logging.ini')
 if __name__ == '__main__':
 
-    simulationPeriod = 1000
+    simulationPeriod = 1000000
     datestamp = time.strftime('%Y%m%d')
     idCloud = 3
 
