@@ -356,10 +356,12 @@ class MCDARoutingAndDeploying(Selection):
             # logging.info("\t Candidate list: "+str(mergednodes))
 
 
-            best_node = self.ELECTRE_evaluation(sim,node_src,mergednodes,message,app_name,service)
-            self.idEvaluation += 1
+            # best_node = self.ELECTRE_evaluation(sim,node_src,mergednodes,message,app_name,service)
+            # self.idEvaluation += 1
 
-            des = sim.get_DES_from_Service_In_Node(best_node,app_name,service)
+            # des = sim.get_DES_from_Service_In_Node(best_node,app_name,service)
+
+            best_node = 153
 
             logging.info("RESULTS: bestNODE: %i, DES: %s" % (best_node, des))
 
@@ -380,6 +382,7 @@ class MCDARoutingAndDeploying(Selection):
 
 
         path,des = self.controlServices[(node_src,service)]
+        print(path,des)
         # print path, des
         # print "---"*20
         #The number of nodes control the updating of the cache. If the number of nodes changes, the cache is totally cleaned.

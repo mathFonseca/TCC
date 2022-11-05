@@ -41,10 +41,10 @@ def createApplicationFromJson(data):
         messages = {}
         for message in app["message"]:
             logging.info("Criando mensagem: %s" %message["name"])
-            messages[message["name"]] = Message(message["name"], message["moduleSource"], message["moduleDestiny"], instructions=message["instructions"], bytes=message["bytes"])
+            messages[message["name"]] = Message(message["name"], message["s"], message["d"], instructions=message["instructions"], bytes=message["bytes"])
 
             # Mensagens que surgem da source (sem nó em específico)
-            if message["moduleSource"] == "None":
+            if message["s"] == "None":
                 a.add_source_messages(messages[message["name"]])
 
         # Usar .keys() retorna número de itens de um... container
@@ -103,7 +103,7 @@ def main(simulated_time, case, idCloud):
         distribution = exponentialDistribution(name="Exp", lambd=random.randint(100,1000), seed= int(aName)*100)
         pop_app = DynamicPopulation(name="Dynamic_%s" % aName, data=data, activation_dist=distribution)
         # s.deploy_app(apps[aName], placement, pop_app, selectorPath)
-        s.deploy_app(apps[aName], placement, selectorPath)
+        s.deploy_app2(apps[aName], placement, pop_app, selectorPath)
         #s.deploy_app2()
         logging.info("Deploying app: %i" %int(aName))
 
