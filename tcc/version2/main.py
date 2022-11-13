@@ -13,6 +13,8 @@ from yafs.core import Sim
 from yafs.application import Application, Message
 from yafs.topology import Topology
 from yafs.distribution import *
+from yafs.selection import First_ShortestPath
+from yafs.application import fractional_selectivity
 
 from yafs.placement import JSONPlacement
 from MCDAPathSelection import MCDARoutingAndDeploying
@@ -35,12 +37,13 @@ def createApplicationFromJson(data):
             modules.append({module["name"]: {"RAM": module["RAM"], "Type": Application.TYPE_MODULE}})
         
         # Configura todos os módulos da Aplicação.
+        # 12 3 
         a.set_modules(modules)
 
         # Mensagens dessa aplicação
         messages = {}
         for message in app["message"]:
-            logging.info("Criando mensagem: %s" %message["name"])
+            logging.info("Criando mensagem: %s. Source: %s. Destiny: %s." %(message["name"], message["s"], message["d"]))
             messages[message["name"]] = Message(message["name"], message["s"], message["d"], instructions=message["instructions"], bytes=message["bytes"])
 
             # Mensagens que surgem da source (sem nó em específico)
@@ -52,7 +55,8 @@ def createApplicationFromJson(data):
 
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
-                a.add_service_module(message["module"], messages[message["message_in"]], messages[message["message_out"]], uniformDistribution, threshold=1.0)
+                uniform = uniformDistribution(name="Uni",min=100, max=100)
+                a.add_service_module(message["module"], messages[message["message_in"]], messages[message["message_out"]], fractional_selectivity, threshold=1.0)
 
             else:
                 a.add_service_module(message["module"], messages[message["message_in"]])
@@ -60,9 +64,8 @@ def createApplicationFromJson(data):
         applications[app["name"]] = a
     return applications
 
-def main(simulated_time, case, idCloud):
-
-
+def main(simulated_time, case, selection, idCloud):
+    logging.config.fileConfig(os.getcwd() + '/logging.ini')
     pathResults = 'results/'
 
     t = Topology()
@@ -74,16 +77,19 @@ def main(simulated_time, case, idCloud):
     dataApps = json.load(open('applications/appDefinition.json'))
     apps = createApplicationFromJson(dataApps)
     
-    for app in apps:
-        print(apps[app])
+    # for app in apps:
+    #     print(apps[app])
 
     placementJson = json.load(open('allocations/allocDefinition.json'))
     placement = JSONPlacementOnlyCloud(name="Cloud Alloc",idcloud=idCloud, json=placementJson)
-    print("Placement... completed.")
+    logging.info("Placement... completed.")
     
     # TODO: Simulator function here
 
-    selectorPath = MCDARoutingAndDeploying(path="",pathResults=pathResults,idcloud=idCloud)
+    if selection == 1:
+        selectorPath = First_ShortestPath(logger=True)
+    else:
+        selectorPath = MCDARoutingAndDeploying(path="",pathResults=pathResults,idcloud=idCloud)
 
     stop_time = simulated_time
     s = Sim(t, default_results_path=pathResults + "Results_%s_%i" % (case, stop_time))
@@ -102,9 +108,10 @@ def main(simulated_time, case, idCloud):
 
         distribution = exponentialDistribution(name="Exp", lambd=random.randint(100,1000), seed= int(aName)*100)
         pop_app = DynamicPopulation(name="Dynamic_%s" % aName, data=data, activation_dist=distribution)
-        # s.deploy_app(apps[aName], placement, pop_app, selectorPath)
+        
+        # s.deploy_app(apps[aName], placement, selectorPath)
         s.deploy_app2(apps[aName], placement, pop_app, selectorPath)
-        #s.deploy_app2()
+        
         logging.info("Deploying app: %i" %int(aName))
 
     logging.info(" Performing simulation: %s "%(case))
@@ -113,15 +120,14 @@ def main(simulated_time, case, idCloud):
 
 
 
-logging.config.fileConfig(os.getcwd() + '/logging.ini')
+
 if __name__ == '__main__':
 
-    simulationPeriod = 1000000
+    simulationPeriod = 10000
     datestamp = time.strftime('%Y%m%d')
-    idCloud = 3
-
-
+    id_Cloud = 153
+    
     start_time = time.time()
-    main(simulated_time=simulationPeriod, case='01', idCloud=3)
+    main(simulated_time=simulationPeriod, case='01', selection=2, idCloud=id_Cloud)
     print("\n--- %s seconds ---" % (time.time() - start_time))
 
