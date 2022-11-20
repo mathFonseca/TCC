@@ -1,0 +1,9 @@
+
+Rodar no terminal que deseja executar YAFS:
+    export PYTHONPATH=$PYTHONPATH:/home/math/YAFS/src
+
+Abrir grafo no Gephi:
+    Ir até a pasta do Gephi e rodar:
+    ./bin/gephi 
+    Carregar arquivos .gexf (aparentemente deprecated)
+    
